@@ -1,10 +1,32 @@
 import time
 import telebot
 from telebot import types
+import requests
+from urllib.parse import urlencode
+import pandas
+import schedule
+
 
 bot = telebot.TeleBot('6724361419:AAGOgTf4eamG4bgwKGAfMAbaepxG0kVIQbc')
 
-#кнопки после обработчика команды старт
+
+def download_file():
+    base_url = 'https://cloud-api.yandex.net/v1/disk/public/resources/download?'
+    public_key = 'https://disk.yandex.ru/i/xEBQolhFeC5D4g'
+    # Получаем загрузочную ссылку
+    final_url = base_url + urlencode(dict(public_key=public_key))
+    response = requests.get(final_url)
+    download_url = response.json()['href']
+    # Загружаем файл и сохраняем его
+    download_response = requests.get(download_url)
+    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', 'wb') as f:
+        f.write(download_response.content)
+
+
+schedule.every().day.at("09:00").do(download_file)
+schedule.every().day.at("19:00").do(download_file)
+
+
 @bot.message_handler(commands=['start'])
 def start(message):
 
@@ -57,6 +79,7 @@ def start(message):
 
     bot.send_message(message.chat.id, "Привет, выберите класс: ", reply_markup=keyboard)
 
+
 @ bot.callback_query_handler(func=lambda call: True)
 def callback_querry(call):
     if call.data == "1":
@@ -83,13 +106,23 @@ def callback_querry(call):
         callback_group11(call)
     elif call.data == "return back":
         start(call.message)
+
+
+@bot.message_handler(commands=['help'])
+def send_help(message):
+    bot.send_message(message.chat.id, '''/start - запуск бота, 
+/support - написать в поддержку
+/contact - контакты разработчика ''')
+
+
 def callback_group1(call):
     bot.send_message(call.message.chat.id, "Расписание для 1 класса.")
-    # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_1.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    colms = [0, 1]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -97,15 +130,18 @@ def callback_group1(call):
     )
     keyboard.add(btn_return)
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
+
 
 def callback_group2(call):
 
     bot.send_message(call.message.chat.id, "Расписание для 2 класса.")
-    # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_2.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    # клавиатура
+    colms = [0, 2]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -113,13 +149,17 @@ def callback_group2(call):
     )
     keyboard.add(btn_return)
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
+
+
 def callback_group3(call):
     bot.send_message(call.message.chat.id, "Расписание для 3 класса.")
     # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_3.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    colms = [0, 3]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -127,13 +167,17 @@ def callback_group3(call):
     )
     keyboard.add(btn_return)
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
+
+
 def callback_group4(call):
     bot.send_message(call.message.chat.id, "Расписание для 4 класса.")
     # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_4.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    colms = [0, 4]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -141,14 +185,17 @@ def callback_group4(call):
     )
     keyboard.add(btn_return)
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
+
 
 def callback_group5(call):
     bot.send_message(call.message.chat.id, "Расписание для 5 класса.")
     # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_5.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    colms = [0, 5]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -156,14 +203,17 @@ def callback_group5(call):
     )
     keyboard.add(btn_return)
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
+
 
 def callback_group6(call):
     bot.send_message(call.message.chat.id, "Расписание для 6 класса.")
     # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_6.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    colms = [0, 6]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -171,14 +221,17 @@ def callback_group6(call):
     )
     keyboard.add(btn_return)
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
+
 
 def callback_group7(call):
     bot.send_message(call.message.chat.id, "Расписание для 7 класса.")
     # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_7.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    colms = [0, 7]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -186,14 +239,17 @@ def callback_group7(call):
     )
     keyboard.add(btn_return)
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
+
 
 def callback_group8(call):
     bot.send_message(call.message.chat.id, "Расписание для 8 класса.")
     # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_8.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    colms = [0, 8]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -201,14 +257,17 @@ def callback_group8(call):
     )
     keyboard.add(btn_return)
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
+
 
 def callback_group9(call):
     bot.send_message(call.message.chat.id, "Расписание для 9 класса.")
     # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_9.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    colms = [0, 9]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -216,14 +275,17 @@ def callback_group9(call):
     )
     keyboard.add(btn_return)
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
+
 
 def callback_group10(call):
     bot.send_message(call.message.chat.id, "Расписание для 10 класса.")
     # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_10.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    colms = [0, 10]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -231,14 +293,17 @@ def callback_group10(call):
     )
     keyboard.add(btn_return)
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
+
 
 def callback_group11(call):
     bot.send_message(call.message.chat.id, "Расписание для 11 класса.")
     # клавиатура
     keyboard = types.InlineKeyboardMarkup()
-    with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_11.txt', 'r', encoding='utf-8') as f:
-        rasp_text = f.read()
-    bot.send_message(call.message.chat.id, rasp_text)
+    colms = [0, 11]
+    rasp_text1 = pandas.read_excel('C:\\Users\\Nikolai\\Desktop\\telebot\\downloaded_file.xlsx', usecols=colms)
+    rasp_text1 = rasp_text1.fillna('')
+    rasp_text1_str = rasp_text1.to_string(index=False).replace(" ", "")
+    bot.send_message(call.message.chat.id, rasp_text1_str)
     # кнопка
     btn_return = types.InlineKeyboardButton(
         text='Вернуться назад',
@@ -248,53 +313,16 @@ def callback_group11(call):
     bot.send_message(call.message.chat.id, "Нажмите кнопку...", reply_markup=keyboard)
 
 
-#@bot.callback_query_handler(func=lambda call: call.data.startswith('week_'))
-#def callback_shelude(call):
-#    keyboard = types.InlineKeyboardMarkup()
-#    if call.data == 'week_1':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_1.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
-#    elif call.data == 'week_2':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_2.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
-#    elif call.data == 'week_3':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_3.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
-#    elif call.data == 'week_4':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_4.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
-#    elif call.data == 'week_5':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_5.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
-#    elif call.data == 'week_6':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_6.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
-#    elif call.data == 'week_7':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_7.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
-#    elif call.data == 'week_8':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_8.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
-#    elif call.data == 'week_9':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_9.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
-#    elif call.data == 'week_10':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_10.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
-#    elif call.data == 'week_11':
-#        with open('C:\\Users\\Nikolai\\Desktop\\telebot\\text\\rasp_week_11.txt', 'r', encoding='utf-8') as f:
-#            rasp_text = f.read()
-#        bot.send_message(call.message.chat.id, rasp_text, reply_markup=keyboard)
+@bot.message_handler(commands=['contact'])
+def send_contact(message):
+    bot.send_message(message.chat.id, 'контакты разработчика - @nikktov')
+
+
+    
+@bot.message_handler(commands=['support'])
+def send_support(message):
+    bot.send_message(message.chat.id, 'проблемы с ботом или он не работает - пишите тг @nikktov')
+
 
 bot.polling(none_stop=True, interval=0)
 
@@ -305,3 +333,7 @@ if __name__ == '__main__':
         except Exception as e:
             time.sleep(3)
             print(e)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
