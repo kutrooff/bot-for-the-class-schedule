@@ -7,7 +7,7 @@ import pandas
 import schedule
 
 
-bot = telebot.TeleBot('6724361419:AAG__KMiGEwnDSSwUFXFiyPxjo7MeYqgEHY')
+bot = telebot.TeleBot('')
 
 
 def download_file():
